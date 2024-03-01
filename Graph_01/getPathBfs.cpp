@@ -1,32 +1,40 @@
 #include<iostream>
 #include<vector>
 #include<queue>
+#include<unordered_map>
 using namespace std;
 
-vector<int> helper(int ** edges,int v,int si,int ei,bool * visited,queue<int>levelOrderNodes){
+vector<int> helper(int ** edges,int v,int si,int ei,bool * visited,queue<int>levelOrderNodes,unordered_map<int,int>pathMap){
+    vector<int>bfsPathVector;
     levelOrderNodes.push(si);
     visited[si] = true;
     while(!levelOrderNodes.empty()){
         int front = levelOrderNodes.front();
         levelOrderNodes.pop();
         for(int i=0;i<v;++i){
-            if(!visited[i] && edges[si][i] == 1){
+            if(!visited[i] && edges[front][i] == 1){
+                pathMap[i] = front;
                 levelOrderNodes.push(i);
                 visited[i] = true;
+                if(i == ei){
+                    bfsPathVector.push_back(ei);
+                    while(ei != si){
+                        bfsPathVector.push_back(pathMap[ei]);
+                        ei = pathMap[ei];
+                    }
+                }
             }
         }
     }
-    while(levelOrderNodes.empty()){
-        levelOrderNodes.pop();
-    }
-    return vector<int>{1,2,3};
+    return bfsPathVector;
 }
 
 vector<int> getPathBfs(int ** edges,int v,int si,int ei){
     bool * visited = new bool [v];
     for(int i=0;i<v;++i) visited[i] = false;
     queue<int>levelOrderNodes;
-    return helper(edges,v,si,ei,visited,levelOrderNodes);
+    unordered_map<int,int> pathMap;
+    return helper(edges,v,si,ei,visited,levelOrderNodes, pathMap);
 }
 
 
